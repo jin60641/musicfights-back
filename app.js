@@ -3,10 +3,12 @@ import bodyParser from 'body-parser';
 import http from 'http';
 
 import route from './route';
+import { jwtSecret } from './config';
 
 const app = express();
 const port = process.env.PORT || 3333;
 
+app.set('jwt-secret', tokenSecret);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true,
