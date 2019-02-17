@@ -31,4 +31,4 @@ export const db = {
   },
 };
 
-export const tokenSecert = 'token secret';
+export const tokenSecret = 'token secret';

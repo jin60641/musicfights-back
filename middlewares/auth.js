@@ -1,7 +1,14 @@
 import jwt from 'jsonwebtoken';
 import db from '../models';
 
-export const login = (req, res) => {
+const loggedIn = (req, res) => {
+  // jwt ~~
+  // res.send ~~~
+  
+  res.status(400).send({ message: 'no token' });
+}
+
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   const where = {
@@ -15,8 +22,8 @@ export const login = (req, res) => {
     raw: true,
   });
 
-  if(user){
-    if(user.verify){
+  if (user) {
+    if (user.verify) {
       const { id } = user;
       const secret = req.app.get('jwt-secret');
       const token = jwt.sign({ id, email }, secret);
@@ -27,17 +34,21 @@ export const login = (req, res) => {
   } else {
     res.status(400).send({ message: '이메일 또는 비밀번호가 잘못되었습니다.' });
   }
-}
+};
 
-export const signUp = async (req, res) => {
+const signUp = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     res.status(400).send({ message: 'invalid' });
     return;
   }
   const user = await db.User.findOne({
-    where : { email },
+    where: { email },
   });
+
+  if (user) {
+    res.status(400).send({ message: 'sign up already' });
+  }
 
   const current = {
     email,
@@ -50,4 +61,10 @@ export const signUp = async (req, res) => {
   } else {
     res.status(400).send({ message: 'invalid' });
   }
-}
+};
+
+export default {
+  loggedIn,
+  login,
+  signUp,
+};

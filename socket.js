@@ -6,9 +6,10 @@ const socketCore = (socket) => {
 
 let io;
 global.io = io;
-const socketjs = (server) => {
+
+const connectSocket = (server) => {
   io = socketIo.listen(server);
   io.on('connection', socketCore);
 };
 
-module.exports = socketjs;
+export default connectSocket;

@@ -1,5 +1,1 @@
-import userMws from './user';
-
-export default {
-  userMws,
-};
+export authMws from './auth';

@@ -2,8 +2,10 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import http from 'http';
 
+import socket from './socket';
 import route from './route';
-import { jwtSecret } from './config';
+
+import { tokenSecret } from './config';
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -17,6 +19,7 @@ app.use(bodyParser.urlencoded({
 app.use(route);
 
 const server = http.createServer(app);
+socket(server);
 
 server.listen(port, () => {
   console.log(`listen on ${port}`);
