@@ -4,9 +4,9 @@ import db from '../models';
 const loggedIn = (req, res) => {
   // jwt ~~
   // res.send ~~~
-  
+
   res.status(400).send({ message: 'no token' });
-}
+};
 
 const login = async (req, res) => {
   const { email, password } = req.body;
