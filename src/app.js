@@ -5,7 +5,7 @@ import http from 'http';
 import socket from './socket';
 import route from './route';
 
-import { tokenSecret } from './config';
+import { tokenSecret } from '../config';
 
 const app = express();
 const port = process.env.PORT || 3333;
