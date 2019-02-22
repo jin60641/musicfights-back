@@ -78,6 +78,28 @@ const getMp3 = (url, filePath) => new Promise((resolve, reject) => {
   });
 });
 
+const getMusic = async (req, res) => {
+  const {
+    vid,
+    start,
+    duration,
+  } = req.params;
+
+  const music = await db.Music.findOne({ vid });
+  const filePath = path.join(__dirname, '..', '..', 'files', `${vid}.mp3`);
+	if (music && fs.existsSync(filePath)) {
+		ffmpeg(fs.createReadStream(filePath))
+      .setStartTime(parseInt(start))
+      .duration(parseInt(duration))
+      .format('mp3')
+      .audioCodec('libmp3lame')
+      .on('error', () => null)
+      .pipe(res);
+	} else {
+		res.send({ message: 'no file' });
+	}
+};
+
 const postMusic = async (req, res) => {
   const { file } = req;
   const filePath = path.join(__dirname, '..', '..', 'files', file.originalname);
@@ -112,9 +134,9 @@ const postMusicByYoutube = async (req, res) => {
   }
 };
 
-
 export default {
   upload,
+  getMusic,
   postMusic,
   postMusicByYoutube,
 };
