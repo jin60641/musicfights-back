@@ -109,8 +109,8 @@ const postMusic = async (req, res) => {
 };
 
 const postMusicByYoutube = async (req, res) => {
-  const { url } = req.body;
-  const [vid] = url.split('=').splice(-1);
+  const { vid } = req.body;
+  const url = `https://www.youtube.com/watch?v=${vid}`;
   const filePath = path.join(__dirname, '..', '..', 'files', `${vid}.mp3`);
   const music = await db.Music.findOne({ vid });
   if (music && fs.existsSync(filePath)) {
