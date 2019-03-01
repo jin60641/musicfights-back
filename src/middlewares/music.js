@@ -87,17 +87,17 @@ const getMusic = async (req, res) => {
 
   const music = await db.Music.findOne({ vid });
   const filePath = path.join(__dirname, '..', '..', 'files', `${vid}.mp3`);
-	if (music && fs.existsSync(filePath)) {
-		ffmpeg(fs.createReadStream(filePath))
-      .setStartTime(parseInt(start))
-      .duration(parseInt(duration))
+  if (music && fs.existsSync(filePath)) {
+    ffmpeg(fs.createReadStream(filePath))
+      .setStartTime(parseInt(start, 10))
+      .duration(parseInt(duration, 10))
       .format('mp3')
       .audioCodec('libmp3lame')
       .on('error', () => null)
       .pipe(res);
-	} else {
-		res.send({ message: 'no file' });
-	}
+  } else {
+    res.send({ message: 'no file' });
+  }
 };
 
 const postMusic = async (req, res) => {
