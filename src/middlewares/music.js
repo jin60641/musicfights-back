@@ -47,13 +47,16 @@ const getBarsFromMusic = filePath => new Promise((resolve, reject) => {
   reader.readAsArrayBuffer(new File(filePath));
 });
 
-const getDuration = url => new Promise((resolve, reject) => {
+const getInfo = url => new Promise((resolve, reject) => {
   ytdl.getInfo(url, [], { maxBuffer: 1000 * 1024 }, (err, info = {}) => {
     if (err) {
       return reject(err);
     }
     const { duration = '' } = info;
-    resolve(duration.split(':'));
+    resolve({
+      ...info,
+      duration: duration.split(':'),
+    });
   });
 });
 
@@ -117,7 +120,7 @@ const postMusicByYoutube = async (req, res) => {
     res.send({ data: music.bars, message: 'success' });
     return;
   }
-  const duration = await getDuration(url);
+  const { duration, title } = await getInfo(url);
   if (duration.length >= 3 || (duration.length === 2 && duration[0] > 6)) {
     return res.send({ message: '6분 이내의 영상만 음원을 추출하실 수 있습니다.' });
   }
@@ -126,6 +129,7 @@ const postMusicByYoutube = async (req, res) => {
     const data = await getBarsFromMusic(filePath);
     await db.Music.create({
       vid,
+      title,
       bars: data,
     });
     res.send({ data, message: 'success' });
