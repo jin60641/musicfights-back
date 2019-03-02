@@ -3,18 +3,28 @@ import jwt from 'jsonwebtoken';
 import db from '../models';
 import { domain, host, mailgun } from '../../config';
 
+const checkToken = async (token, secret) => {
+  const isLoggedIn = await jwt.verify(token, secret);
+  if (isLoggedIn) {
+    const { id } = isLoggedIn;
+    const user = await db.User.findOne({ where: { id } });
+    return user;
+  }
+  return false;
+};
+
 const checkLoggedIn = async (req, res, next) => {
   const token = req.headers['x-access-token'];
   const secret = req.app.get('jwt-secret');
-  const isLoggedIn = await jwt.verify(token, secret);
-  if (!isLoggedIn) {
+  const user = await checkToken(token, secret);
+  if (!user) {
     res.status(400).send({ message: '로그인이 필요합니다.' });
     return;
   }
-  const { id } = isLoggedIn;
-  req.user = await db.User.findOne({ where: { id } });
+  req.user = user;
   next();
 };
+
 const verifyMail = async (req, res) => {
   const { email, link } = req.body;
   const user = await db.User.findOne({ where: { email } });
@@ -40,11 +50,7 @@ const login = async (req, res) => {
     password: db.User.createHashedPassword(password),
   };
 
-  const user = await db.User.findOne({
-    where,
-    attributes: db.User.attributeNames,
-    raw: true,
-  });
+  const user = await db.User.findOne({ where });
 
   if (user) {
     if (user.verify) {
@@ -125,6 +131,7 @@ const signUp = async (req, res) => {
 };
 
 export default {
+  checkToken,
   checkLoggedIn,
   verifyMail,
   loggedIn,
